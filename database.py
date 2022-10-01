@@ -27,34 +27,64 @@ def insert_db(query: str, args: tuple = ()):
     cur.execute(query, args)
     conn.commit()
     conn.close()
-    return cur.rowcount
-
-
-# def get_client_db(establishment, customer):
-#     result = query_db('SELECT name FROM contacts WHERE number=? AND owner=? LIMIT 1',
-#                       (str(customer.phone), establishment.owner), True)
-#     return result
-#
-#
-# def insert_client(customer, establishment):
-#     result = insert_db('INSERT INTO contacts (owner, number, name) VALUES (?, ?, ?)',
-#                        (str(establishment.owner), str(customer.phone), str(customer.name)))
-#     return result
+    return 'inserido com sucesso'
 
 
 def create_table_pessoa():
-    result = create_table('CREATE TABLE IF NOT EXISTS people (id_person INTEGER AUTO_INCREMENT, cpf VARCHAR(14), '
-                          'first_name TEXT, middle_name TEXT, last_name TEXT, age integer,conta INTEGER, '
-                          'FOREIGN KEY (conta) references conta (number_conta))')
+    result = create_table('CREATE TABLE IF NOT EXISTS people (id_person INTEGER PRIMARY KEY AUTOINCREMENT, '
+                          'cpf VARCHAR(14) UNIQUE, first_name TEXT, middle_name TEXT, last_name TEXT, age integer,'
+                          ' conta INTEGER UNIQUE, FOREIGN KEY (conta) references conta (number_conta))')
     return result
 
 
 def create_table_conta():
-    result = create_table('CREATE TABLE IF NOT EXISTS conta (id_conta INTEGER AUTO_INCREMENT, agency INTEGER, '
-                          'number_conta INTEGER, saldo REAL, gerente TEXT, titular TEXT)')
+    result = create_table('CREATE TABLE IF NOT EXISTS conta (id_conta INTEGER PRIMARY KEY AUTOINCREMENT, '
+                          'agency INTEGER, number_conta INTEGER UNIQUE, saldo REAL, gerente TEXT, '
+                          'titular TEXT)')
     return result
+
+
+def insert_conta(agency: int, number_conta: int, saldo: float, gerente: str, titular: str):
+    result = insert_db('INSERT INTO conta(agency, number_conta, saldo, gerente, titular) values (?,?,?,?,?);',
+                       (agency, number_conta, saldo, gerente, titular))
+    return result
+
+
+def insert_pessoa(cpf: str, first_name: str, middle_name: str, last_name: str, age: int, conta:int):
+    result = insert_db('INSERT INTO people(cpf, first_name, middle_name, last_name, age, conta) values (?,?,?,?,?,?);',
+                       (cpf, first_name, middle_name, last_name, age, conta))
+    return result
+
+
+def delete_conta():
+    pass
+
+
+def delete_pessoa():
+    pass
+
+
+def put_conta():
+    pass
+
+
+def put_pessoa():
+    pass
+
+
+def get_pessoa():
+    pass
+
+
+def get_conta():
+    pass
+
+
+def get_pessoa_conta():
+    pass
 
 
 if __name__ == '__main__':
     print(create_table_conta())
     print(create_table_pessoa())
+    print(insert_pessoa('06924290345', "João", "Vitor", "Monteiro", 21, 27))
