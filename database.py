@@ -1,3 +1,4 @@
+import os
 import sqlite3
 
 
@@ -107,11 +108,34 @@ def put_pessoa(cpf: str, first_name: str, middle_name: str, last_name: str, age:
 def get_pessoa(cpf: str):
     cpf = format_cpf(cpf)
     result = query_db('SELECT * FROM people WHERE cpf=?', (cpf, ))
+    try:
+        os.mkdir('./Busca de pessoa')
+    except OSError:
+        print("Pasta já existe")
+    result = result[0]
+    arquivo = open("./Busca de pessoa/pessoa_results.txt", 'a')
+    arquivo.write(f'================================================================================================\n'
+                  f'Id_pessoa: {result[0]}\nCPF: {result[1]}\nNome: {result[2]}\nSegundo_nome: {result[3]}\n'
+                  f'Ultimo_nome: {result[4]}\nIdade: {result[5]}\nConta: {result[6]}\n'
+                  f'================================================================================================\n')
+    arquivo.close()
     return result
 
 
 def get_conta(number_conta: int):
     result = query_db('SELECT * FROM conta WHERE number_conta=?', (number_conta, ))
+    try:
+        os.mkdir('./Busca de conta')
+    except OSError:
+        print("Pasta já existe")
+    result = result[0]
+    arquivo = open("./Busca de conta/conta_results.txt", 'a')
+    arquivo.write(f'================================================================================================\n'
+                  f'Id_conta: {result[0]}\nAgência: {result[1]}\nNúmero_da_conta: {result[2]}\nSaldo: {result[3]}\n'
+                  f'Gerente: {result[4]}\nTitular: {result[5]}\n'
+                  f'================================================================================================\n')
+    arquivo.close()
+
     return result
 
 
@@ -119,10 +143,25 @@ def get_pessoa_conta(cpf):
     cpf = format_cpf(cpf)
     result = query_db('SELECT * FROM people left join conta c on c.number_conta = people.conta '
                       'WHERE cpf=?', (cpf, ))
+    try:
+        os.mkdir('./Busca de pessoa e conta')
+    except OSError:
+        print("Pasta já existe")
+    result = result[0]
+    arquivo = open("./Busca de pessoa e conta/pessoa_conta_results.txt", 'a')
+    arquivo.write(f'================================================================================================\n'
+                  f'Id_pessoa: {result[0]}\nCPF: {result[1]}\nNome: {result[2]}\nSegundo_nome: {result[3]}\n'
+                  f'Ultimo_nome: {result[4]}\nIdade: {result[5]}\nConta: {result[6]}\nId_conta: {result[7]}\n'
+                  f'Agência: {result[8]}\nNúmero_da_conta: {result[9]}\nSaldo: {result[10]}\nGerente: {result[11]}\n'
+                  f'Titular: {result[12]}\n'
+                  f'================================================================================================\n')
+    arquivo.close()
     return result
 
 
 if __name__ == '__main__':
     print(create_table_conta())
     print(create_table_pessoa())
-    print(insert_pessoa('06924290345', "João", "Vitor", "Monteiro", 21, 27))
+    get_pessoa_conta('06924290345')
+    get_pessoa('06924290345')
+    get_conta(27)
