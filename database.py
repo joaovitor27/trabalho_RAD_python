@@ -70,14 +70,15 @@ def insert_conta(agency: str, number_conta: str, saldo: float, gerente: int, tit
 
 
 def insert_pessoa(cpf: str, first_name: str, middle_name: str, last_name: str, age: int, conta: int):
+    cpf = format_cpf(cpf)
     result = insert_db('INSERT INTO people(cpf, first_name, middle_name, last_name, age, conta) values (?,?,?,?,?,?);',
                        (cpf, first_name, middle_name, last_name, age, conta))
     return result
 
 
 def format_cpf(cpf: str):
-    cpf = cpf.replace('.', '')
-    cpf = cpf.replace('-', '')
+    if '-' and '.' not in cpf or len(cpf) <= 11:
+        cpf = '{}.{}.{}-{}'.format(cpf[:3], cpf[3:6], cpf[6:9], cpf[9:])
     return cpf
 
 
@@ -139,7 +140,7 @@ def get_conta(number_conta: int):
     return result
 
 
-def get_pessoa_conta(cpf):
+def get_pessoa_conta(cpf: str):
     cpf = format_cpf(cpf)
     result = query_db('SELECT * FROM people left join conta c on c.number_conta = people.conta '
                       'WHERE cpf=?', (cpf,))
@@ -186,6 +187,7 @@ def inserindo_dados_no_banco(path: str):
             cpf, first_name, middle_name, last_name, age, conta = dados[0], dados[1], dados[2], dados[3], dados[4], \
                                                                   dados[5]
             insert_pessoa(cpf, first_name, middle_name, last_name, int(age), int(conta))
+
     elif path == './dados/contas.txt':
         arquivo = open(path, 'r')
         linhas = arquivo.readlines()
