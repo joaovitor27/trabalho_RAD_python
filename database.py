@@ -51,25 +51,25 @@ def put_db(query: str, args: tuple = ()):
 
 def create_table_pessoa():
     result = create_table('CREATE TABLE IF NOT EXISTS people (id_person INTEGER PRIMARY KEY AUTOINCREMENT, '
-                          'cpf VARCHAR(11) UNIQUE, first_name TEXT, middle_name TEXT, last_name TEXT, age integer,'
-                          ' conta INTEGER UNIQUE, FOREIGN KEY (conta) references conta (number_conta))')
+                          'cpf VARCHAR(14) UNIQUE, first_name TEXT, middle_name TEXT, last_name TEXT, age integer,'
+                          ' conta INTEGER UNIQUE)')
     return result
 
 
 def create_table_conta():
     result = create_table('CREATE TABLE IF NOT EXISTS conta (id_conta INTEGER PRIMARY KEY AUTOINCREMENT, '
-                          'agency INTEGER, number_conta INTEGER UNIQUE, saldo REAL, gerente TEXT, '
-                          'titular TEXT)')
+                          'agency TEXT, number_conta TEXT, saldo REAL, gerente INTEGER, '
+                          'titular INTEGER, FOREIGN KEY (titular) references people (conta))')
     return result
 
 
-def insert_conta(agency: int, number_conta: int, saldo: float, gerente: str, titular: str):
+def insert_conta(agency: str, number_conta: str, saldo: float, gerente: int, titular: int):
     result = insert_db('INSERT INTO conta(agency, number_conta, saldo, gerente, titular) values (?,?,?,?,?);',
                        (agency, number_conta, saldo, gerente, titular))
     return result
 
 
-def insert_pessoa(cpf: str, first_name: str, middle_name: str, last_name: str, age: int, conta:int):
+def insert_pessoa(cpf: str, first_name: str, middle_name: str, last_name: str, age: int, conta: int):
     result = insert_db('INSERT INTO people(cpf, first_name, middle_name, last_name, age, conta) values (?,?,?,?,?,?);',
                        (cpf, first_name, middle_name, last_name, age, conta))
     return result
@@ -82,7 +82,7 @@ def format_cpf(cpf: str):
 
 
 def delete_conta(number_conta: int):
-    result = delete_db('DELETE FROM conta WHERE number_conta=?', (number_conta, ))
+    result = delete_db('DELETE FROM conta WHERE number_conta=?', (number_conta,))
     return result
 
 
@@ -107,7 +107,7 @@ def put_pessoa(cpf: str, first_name: str, middle_name: str, last_name: str, age:
 
 def get_pessoa(cpf: str):
     cpf = format_cpf(cpf)
-    result = query_db('SELECT * FROM people WHERE cpf=?', (cpf, ))
+    result = query_db('SELECT * FROM people WHERE cpf=?', (cpf,))
     try:
         os.mkdir('./Busca de pessoa')
     except OSError:
@@ -123,7 +123,7 @@ def get_pessoa(cpf: str):
 
 
 def get_conta(number_conta: int):
-    result = query_db('SELECT * FROM conta WHERE number_conta=?', (number_conta, ))
+    result = query_db('SELECT * FROM conta WHERE number_conta=?', (number_conta,))
     try:
         os.mkdir('./Busca de conta')
     except OSError:
@@ -142,7 +142,7 @@ def get_conta(number_conta: int):
 def get_pessoa_conta(cpf):
     cpf = format_cpf(cpf)
     result = query_db('SELECT * FROM people left join conta c on c.number_conta = people.conta '
-                      'WHERE cpf=?', (cpf, ))
+                      'WHERE cpf=?', (cpf,))
     try:
         os.mkdir('./Busca de pessoa e conta')
     except OSError:
@@ -176,7 +176,28 @@ def remove_spaces_by_commas(path: str):
     arquivo_write.close()
 
 
-if __name__ == '__main__':
-    remove_spaces_by_commas('./dados/contas.txt')
-    remove_spaces_by_commas('./dados/nomes.txt')
+def inserindo_dados_no_banco(path: str):
+    path = path.lower()
+    if path == './dados/nomes.txt':
+        arquivo = open(path, 'r')
+        linhas = arquivo.readlines()
+        for linha in linhas:
+            dados = linha.split(',')
+            cpf, first_name, middle_name, last_name, age, conta = dados[0], dados[1], dados[2], dados[3], dados[4], \
+                                                                  dados[5]
+            insert_pessoa(cpf, first_name, middle_name, last_name, int(age), int(conta))
+    elif path == './dados/contas.txt':
+        arquivo = open(path, 'r')
+        linhas = arquivo.readlines()
+        for linha in linhas:
+            dados = linha.split(',')
+            agency, number_conta, saldo, gerente, titular = dados[0], dados[1], dados[2], dados[3], dados[4]
+            insert_conta(agency, number_conta, float(saldo), int(gerente), int(titular))
+    else:
+        return "path inválido"
 
+
+if __name__ == '__main__':
+    create_table_pessoa()
+    create_table_conta()
+    inserindo_dados_no_banco('./dados/contas.txt')
