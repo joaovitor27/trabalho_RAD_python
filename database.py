@@ -159,9 +159,24 @@ def get_pessoa_conta(cpf):
     return result
 
 
+def remove_spaces_by_commas(path: str):
+    arquivo_read = open(path, 'r')
+    linhas_arquivo = arquivo_read.readlines()
+    new_linha_arquivo = []
+    for linha in linhas_arquivo:
+        new_linha = linha.replace(' ', ',')
+        new_linha_arquivo.append(new_linha)
+
+    arquivo_read.close()
+
+    arquivo_write = open(path, 'w')
+    for new_linha in new_linha_arquivo:
+        arquivo_write.write(new_linha)
+
+    arquivo_write.close()
+
+
 if __name__ == '__main__':
-    print(create_table_conta())
-    print(create_table_pessoa())
-    get_pessoa_conta('06924290345')
-    get_pessoa('06924290345')
-    get_conta(27)
+    remove_spaces_by_commas('./dados/contas.txt')
+    remove_spaces_by_commas('./dados/nomes.txt')
+
