@@ -203,3 +203,4 @@ if __name__ == '__main__':
     create_table_pessoa()
     create_table_conta()
     inserindo_dados_no_banco('./dados/contas.txt')
+    inserindo_dados_no_banco('./dados/nomes.txt')
