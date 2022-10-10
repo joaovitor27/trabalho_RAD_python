@@ -3,12 +3,12 @@
 
 ### Feito por:
 ```bash
-* Nome: Jo„o Vitor da Silva Monteiro
-* MatrÌcula: 202009285708
+* Nome: Jo√£o Vitor da Silva Monteiro
+* Matr√≠cula: 202009285708
 ```
 
 ## Como Executar o projeto:
-* v· atÈ o arquivo "database.py" e adicione a funÁ„o que vocÍ quer executar dentro do bloco "if __name__=='__main__:'", vej· o exemplo a baixo:
+* v√° at√© o arquivo "database.py" e adicione a fun√ß√£o que voc√™ quer executar dentro do bloco "if ____name____=='____main____:'", vej√° o exemplo a baixo:
 ```bash
 if __name__ == '__main__':
     create_table_pessoa()
